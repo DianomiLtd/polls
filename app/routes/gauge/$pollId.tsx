@@ -69,44 +69,48 @@ export default function Poll() {
   return (
     <>
       <div>{question}</div>
-      {hasVoted ? (<div>Results</div>) ? (
-      <div>
-        <CircularGaugeComponent
-          
-          dragEnd={getDragValue}
-          enablePointerDrag={true}
-          tooltip={{
-            enable: true,
-            template:
-              '<div id="templateWrap"><div style="float: right; padding-left:10px; line-height:30px;"><span>Pointer &nbsp;&nbsp;:&nbsp; ${value}</span></div></div>'
-          }}
-        >
-          {/* <Inject services={[GaugeTooltip]} /> */}
-          <AxesDirective>
-            <AxisDirective
-              startAngle={270}
-              endAngle={90}
-              minimum={answer.min}
-              maximum={answer.max}
-              lineStyle={{width: 10, color: '#999'}}
-              minorTicks={{interval: 1}}
-              // roundingPlaces={1}
-            >
-              <RangesDirective>
-                <RangeDirective start={0} end={answer.default}></RangeDirective>
-              </RangesDirective>
-              <PointersDirective>
-                <PointerDirective
-                  value={answer.default}
-                  cap={{ radius: 10 }}
-                  radius={"90%"}
-                  offset={50}
-                ></PointerDirective>
-              </PointersDirective>
-            </AxisDirective>
-          </AxesDirective>
-        </CircularGaugeComponent>
-      </div>
+      {hasVoted ? (
+        <div>Results</div>
+      ) : (
+        <div>
+          <CircularGaugeComponent
+            dragEnd={getDragValue}
+            enablePointerDrag={true}
+            tooltip={{
+              enable: true,
+              template:
+                '<div id="templateWrap"><div style="float: right; padding-left:10px; line-height:30px;"><span>Pointer &nbsp;&nbsp;:&nbsp; ${value}</span></div></div>'
+            }}
+          >
+            {/* <Inject services={[GaugeTooltip]} /> */}
+            <AxesDirective>
+              <AxisDirective
+                startAngle={270}
+                endAngle={90}
+                minimum={answer.min}
+                maximum={answer.max}
+                lineStyle={{ width: 10, color: "#999" }}
+                minorTicks={{ interval: 1 }}
+                // roundingPlaces={1}
+              >
+                <RangesDirective>
+                  <RangeDirective
+                    start={0}
+                    end={answer.default}
+                  ></RangeDirective>
+                </RangesDirective>
+                <PointersDirective>
+                  <PointerDirective
+                    value={answer.default}
+                    cap={{ radius: 10 }}
+                    radius={"90%"}
+                    offset={50}
+                  ></PointerDirective>
+                </PointersDirective>
+              </AxisDirective>
+            </AxesDirective>
+          </CircularGaugeComponent>
+        </div>
       )}
     </>
   );
