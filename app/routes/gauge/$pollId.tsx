@@ -15,6 +15,8 @@ import {
 } from "@syncfusion/ej2-react-circulargauge";
 import { registerLicense } from "@syncfusion/ej2-base";
 import { useState } from "react";
+import RadarChart from "~/charts/radar";
+import { LayoutGroup, motion } from "framer-motion";
 
 registerLicense(
   "ORg4AjUWIQA/Gnt2VVhkQlFacldJXnxIfEx0RWFab1t6cVNMZFxBNQtUQF1hSn5Rd0VjXHpZcXBVRWlV"
@@ -65,53 +67,65 @@ export default function Poll() {
   const { answer, question } = data;
   const getDragValue = (a) => {
     console.log(a.currentValue);
+    setTimeout(() => {
+      setHasVoted(true);
+    }, 1000);
   };
   return (
     <>
       <div>{question}</div>
-      {hasVoted ? (
-        <div>Results</div>
-      ) : (
-        <div>
-          <CircularGaugeComponent
-            dragEnd={getDragValue}
-            enablePointerDrag={true}
-            tooltip={{
-              enable: true,
-              template:
-                '<div id="templateWrap"><div style="float: right; padding-left:10px; line-height:30px;"><span>Pointer &nbsp;&nbsp;:&nbsp; ${value}</span></div></div>'
-            }}
-          >
-            {/* <Inject services={[GaugeTooltip]} /> */}
-            <AxesDirective>
-              <AxisDirective
-                startAngle={270}
-                endAngle={90}
-                minimum={answer.min}
-                maximum={answer.max}
-                lineStyle={{ width: 10, color: "#999" }}
-                minorTicks={{ interval: 1 }}
-                // roundingPlaces={1}
-              >
-                <RangesDirective>
-                  <RangeDirective
-                    start={0}
-                    end={answer.default}
-                  ></RangeDirective>
-                </RangesDirective>
-                <PointersDirective>
-                  <PointerDirective
-                    value={answer.default}
-                    cap={{ radius: 10 }}
-                    radius={"90%"}
-                    offset={50}
-                  ></PointerDirective>
-                </PointersDirective>
-              </AxisDirective>
-            </AxesDirective>
-          </CircularGaugeComponent>
-        </div>
-      )}
+      <motion.div
+        layout
+        // key={hasVoted ? 'voted' : 'notVoted'}
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        // exit={{ opacity: 0, scale: 0.5}}
+        transition={{ duration: 1 }}
+      >
+        {hasVoted ? (
+          <RadarChart />
+        ) : (
+          <div>
+            <CircularGaugeComponent
+              dragEnd={getDragValue}
+              enablePointerDrag={true}
+              tooltip={{
+                enable: true,
+                template:
+                  '<div id="templateWrap"><div style="float: right; padding-left:10px; line-height:30px;"><span>Pointer &nbsp;&nbsp;:&nbsp; ${value}</span></div></div>'
+              }}
+            >
+              {/* <Inject services={[GaugeTooltip]} /> */}
+              <AxesDirective>
+                <AxisDirective
+                  startAngle={270}
+                  endAngle={90}
+                  minimum={answer.min}
+                  maximum={answer.max}
+                  lineStyle={{ width: 10, color: "#999" }}
+                  minorTicks={{ interval: 1 }}
+                  // roundingPlaces={1}
+                >
+                  <RangesDirective>
+                    <RangeDirective
+                      start={0}
+                      end={answer.default}
+                    ></RangeDirective>
+                  </RangesDirective>
+                  <PointersDirective>
+                    <PointerDirective
+                      value={answer.default}
+                      cap={{ radius: 10 }}
+                      radius={"90%"}
+                      offset={50}
+                    ></PointerDirective>
+                  </PointersDirective>
+                </AxisDirective>
+              </AxesDirective>
+            </CircularGaugeComponent>
+          </div>
+        )}
+      </motion.div>
     </>
   );
 }
