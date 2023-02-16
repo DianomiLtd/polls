@@ -28,26 +28,33 @@ export default function RadarChart() {
   const primaryyAxis: AxisModel = {
     minimum: 0,
     maximum: 16,
-    interval: 2,
+    interval: 2
   };
 
   return (
-    <ChartComponent
-      id="charts"
-      primaryXAxis={primaryxAxis}
-      primaryYAxis={primaryyAxis}
-    >
-      <Inject services={[PolarSeries, ColumnSeries, Category]} />
-      <SeriesCollectionDirective>
-        <SeriesDirective
-          dataSource={columnData}
-          xName="x"
-          yName="y"
-          type="Polar"
-          drawType="Column"
-          fill="black"
-        ></SeriesDirective>
-      </SeriesCollectionDirective>
-    </ChartComponent>
+    <div style={{ height: "75vh" }}>
+      <ChartComponent
+        id="charts"
+        primaryXAxis={primaryxAxis}
+        primaryYAxis={primaryyAxis}
+        style={{
+          resize: "horizontal",
+          width: "100%",
+          height: "100%"
+        }}
+      >
+        <Inject services={[PolarSeries, ColumnSeries, Category]} />
+        <SeriesCollectionDirective>
+          <SeriesDirective
+            dataSource={columnData}
+            xName="x"
+            yName="y"
+            type="Polar"
+            drawType="Column"
+            fill="black"
+          ></SeriesDirective>
+        </SeriesCollectionDirective>
+      </ChartComponent>
+    </div>
   );
 }
