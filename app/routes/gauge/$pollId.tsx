@@ -1,6 +1,6 @@
 import type { LoaderArgs } from "@remix-run/cloudflare"; // or cloudflare/deno
 import { json } from "@remix-run/cloudflare"; // or cloudflare/deno
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useRevalidator } from "@remix-run/react";
 import { z } from "zod";
 import {
   CircularGaugeComponent,
@@ -17,6 +17,7 @@ import { registerLicense } from "@syncfusion/ej2-base";
 import { useState } from "react";
 import RadarChart from "~/charts/radar";
 import { LayoutGroup, motion } from "framer-motion";
+import Bar from "~/charts/bar";
 
 registerLicense(
   "ORg4AjUWIQA/Gnt2VVhkQlFacldJXnxIfEx0RWFab1t6cVNMZFxBNQtUQF1hSn5Rd0VjXHpZcXBVRWlV"
@@ -32,41 +33,46 @@ type Question = {
     max: number;
     default: number;
   };
+  results: Array<{ answer: string; result: number }>;
 };
 
 type Error = {
   error: string;
 };
 
-export const loader = async ({ params }: LoaderArgs) => {
-  let response: Question | Error;
+export const loader = async ({ params, context }: LoaderArgs) => {
+  let response: {
+    api_url?: string;
+    data: Question | Error;
+  };
   try {
     mySchema.parse(Number(params.pollId));
-    response = {
-      id: Number(params.pollId),
-      question:
-        "At what age do you think you will be able to retire comfortably?",
-      answer: {
-        min: 55,
-        max: 85,
-        default: 65
-      }
-    };
+    const result = await fetch(
+      `${context.POLL_API}/question?id=${params.pollId}`
+    );
+    response = await result.json();
   } catch {
-    response = { error: `The id "${params.pollId}" does not exist` };
+    response = { data: {error: `The id "${params.pollId}" does not exist` }};
   }
-  return json(response);
+  return json({ api_url: context.POLL_API, data: response });
 };
 
 export default function Poll() {
   const [hasVoted, setHasVoted] = useState(false);
-  const data = useLoaderData<typeof loader>();
+  const { api_url, data } = useLoaderData<typeof loader>();
   if ("error" in data) {
     return <div>ERROR: {data.error}</div>;
   }
-  const { answer, question } = data;
-  const getDragValue = (a) => {
-    console.log(a.currentValue);
+  const { answer, question, id } = data;
+  const getDragValue = async ({ currentValue }: { currentValue: number }) => {
+    const vote = Math.floor(currentValue);
+    await fetch(`${api_url}/answer`, {
+      method: "POST",
+      body: JSON.stringify({
+        question_id: id,
+        answer: vote.toString()
+      })
+    });
     setTimeout(() => {
       setHasVoted(true);
     }, 1000);
@@ -87,7 +93,7 @@ export default function Poll() {
           style={{ height: "100%" }}
         >
           {hasVoted ? (
-            <RadarChart />
+            <Bar id={id} api_url={api_url} />
           ) : (
             <div style={{ height: "100%" }}>
               <CircularGaugeComponent
@@ -112,7 +118,7 @@ export default function Poll() {
                     endAngle={90}
                     minimum={answer.min}
                     maximum={answer.max}
-                    lineStyle={{ width: 5, color: "#999" }}
+                    lineStyle={{ width: 1, color: "#999" }}
                     minorTicks={{ interval: 1 }}
                     // roundingPlaces={1}
                   >
@@ -123,11 +129,24 @@ export default function Poll() {
                       ></RangeDirective>
                     </RangesDirective> */}
                     <PointersDirective>
+                      {/* <PointerDirective
+                        type={"Marker"}
+                        value={answer.default}
+                        markerShape={"Circle"}
+                      ></PointerDirective> */}
+                      {/* <PointerDirective
+                        type={"Marker"}
+                        markerShape={"Image"}
+                        imageUrl={"http://127.0.0.1:5502/polls/image.png"}
+                        value={answer.default}
+                        markerHeight={50}
+                        markerWidth={100}
+                      ></PointerDirective> */}
                       <PointerDirective
                         value={answer.default}
-                        cap={{ radius: 10 }}
-                        radius={"85%"}
-                        offset={50}
+                        cap={{ radius: 5 }}
+                        radius={"110%"}
+                        pointerWidth={10}
                       ></PointerDirective>
                     </PointersDirective>
                   </AxisDirective>

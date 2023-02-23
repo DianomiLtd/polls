@@ -44,7 +44,7 @@ export const loader = async ({ params }: LoaderArgs) => {
   let response: Question | Error;
   try {
     mySchema.parse(Number(params.pollId));
-    const res = await fetch(`https://polls-beta.dianomi.workers.dev/?id=${params.pollId}`);
+    const res = await fetch(`${process.env.POLL_API}/?id=${params.pollId}`);
     const results: Result[] = await res.json();
     console.log(results);
     response = {
