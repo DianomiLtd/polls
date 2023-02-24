@@ -1,0 +1,1 @@
+declare module '@dianomi/react-contextfeed';

@@ -12,6 +12,12 @@ import {
 } from "@syncfusion/ej2-react-charts";
 import { Browser } from "@syncfusion/ej2-base";
 import { useEffect, useState } from "react";
+import { DianomiContextFeed } from "@dianomi/react-contextfeed";
+import styles from "./bar.css";
+
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
+}
 
 function Bar({ id, api_url }: { id: number; api_url: string }) {
   const [results, setResults] = useState<
@@ -31,7 +37,7 @@ function Bar({ id, api_url }: { id: number; api_url: string }) {
     <>
       <ChartComponent
         id="charts"
-        style={{ textAlign: "center" }}
+        style={{ textAlign: "center", height: "60%" }}
         legendSettings={{ enableHighlight: true }}
         primaryXAxis={{
           labelIntersectAction: Browser.isDevice ? "None" : "Trim",
@@ -52,7 +58,7 @@ function Bar({ id, api_url }: { id: number; api_url: string }) {
           enable: true,
           shared: true
         }}
-        width={Browser.isDevice ? "100%" : "75%"}
+        width={"99%"}
       >
         <Inject
           services={[
@@ -75,6 +81,7 @@ function Bar({ id, api_url }: { id: number; api_url: string }) {
           ></SeriesDirective>
         </SeriesCollectionDirective>
       </ChartComponent>
+      <DianomiContextFeed style={{ height: "50%", width: "100%" }} id={1094} />
     </>
   );
 }

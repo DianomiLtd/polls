@@ -17,7 +17,7 @@ import { registerLicense } from "@syncfusion/ej2-base";
 import { useState } from "react";
 import RadarChart from "~/charts/radar";
 import { LayoutGroup, motion } from "framer-motion";
-import Bar from "~/charts/bar";
+import Bar from "~/charts/bar/bar";
 
 registerLicense(
   "ORg4AjUWIQA/Gnt2VVhkQlFacldJXnxIfEx0RWFab1t6cVNMZFxBNQtUQF1hSn5Rd0VjXHpZcXBVRWlV"
@@ -42,7 +42,7 @@ type Error = {
 
 export const loader = async ({ params, context }: LoaderArgs) => {
   let response: {
-    api_url?: string;
+    api_url: string;
     data: Question | Error;
   };
   try {
@@ -52,13 +52,16 @@ export const loader = async ({ params, context }: LoaderArgs) => {
     );
     response = await result.json();
   } catch {
-    response = { data: {error: `The id "${params.pollId}" does not exist` }};
+    response = {
+      data: { error: `The id "${params.pollId}" does not exist` },
+      api_url: (context.POLL_API as string)  || ''
+    };
   }
   return json({ api_url: context.POLL_API, data: response });
 };
 
 export default function Poll() {
-  const [hasVoted, setHasVoted] = useState(false);
+  const [hasVoted, setHasVoted] = useState(true);
   const { api_url, data } = useLoaderData<typeof loader>();
   if ("error" in data) {
     return <div>ERROR: {data.error}</div>;
