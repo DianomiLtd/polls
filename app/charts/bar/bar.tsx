@@ -5,7 +5,6 @@ import {
   Inject,
   Legend,
   Category,
-  Tooltip,
   ColumnSeries,
   DataLabel,
   Highlight
@@ -14,6 +13,7 @@ import { Browser } from "@syncfusion/ej2-base";
 import { useEffect, useState } from "react";
 import { DianomiContextFeed } from "@dianomi/react-contextfeed";
 import styles from "./bar.css";
+import type { Question } from "~/routes/gauge/$pollId";
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }];
@@ -21,14 +21,25 @@ export function links() {
 
 function Bar({ id, api_url }: { id: number; api_url: string }) {
   const [results, setResults] = useState<
-    Array<{ answer: string; result: number }>
+    Array<{ answer: string; results: number }>
   >([]);
+  const [maximum, setMaximum] = useState<null | number>(null);
   useEffect(() => {
     async function fetchData() {
-      const data = await fetch(`${api_url}/results?id=${id}`);
-      const results: Array<{ answer: string; result: number }> =
-        await data.json();
-      setResults(results);
+      const data = await fetch(`${api_url}/question?id=${id}`);
+      const results: Question = await data.json();
+      let highest: number | null = null;
+      results.results.forEach(({ answer, results }) => {
+        if (!highest) {
+          highest = results;
+          return;
+        }
+        if (results > highest) {
+          highest = results;
+        }
+      });
+      setMaximum(highest);
+      setResults(results.results);
     }
     fetchData();
   }, [api_url, id]);
@@ -51,7 +62,8 @@ function Bar({ id, api_url }: { id: number; api_url: string }) {
         primaryYAxis={{
           majorTickLines: { width: 0 },
           lineStyle: { width: 0 },
-          interval: 1
+          maximum: maximum,
+          interval: maximum ? Math.round((maximum + 2) / 3) : 10
         }}
         chartArea={{ border: { width: 0 } }}
         tooltip={{
@@ -61,19 +73,11 @@ function Bar({ id, api_url }: { id: number; api_url: string }) {
         width={"99%"}
       >
         <Inject
-          services={[
-            ColumnSeries,
-            Legend,
-            Tooltip,
-            Category,
-            DataLabel,
-            Highlight
-          ]}
+          services={[ColumnSeries, Legend, Category, DataLabel, Highlight]}
         />
         <SeriesCollectionDirective>
           <SeriesDirective
             dataSource={results}
-            tooltipMappingName="toolTipMappingName"
             xName="answer"
             columnSpacing={0.1}
             yName="results"

@@ -29,7 +29,7 @@ registerLicense(
 
 const mySchema = z.number();
 
-type Question = {
+export type Question = {
   id: number;
   question: string;
   answer: {
@@ -37,7 +37,7 @@ type Question = {
     max: number;
     default: number;
   };
-  results: Array<{ answer: string; result: number }>;
+  results: Array<{ answer: string; results: number }>;
 };
 
 type Error = {
