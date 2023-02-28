@@ -1,0 +1,15 @@
+body{
+    background: rgb(255, 255, 255);
+    font-family: nexa, arial, sans-serif;
+}
+image#circulargauge_control_1_Axis_0_Pointer_Marker_0 {
+    x: 230px;
+}
+.poll-question {
+    font-size: 14px;
+}
+.partner-logo img {
+    width: 40%;
+    margin-left: 5px;
+    max-width: 40%;
+}

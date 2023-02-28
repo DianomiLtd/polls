@@ -18,7 +18,11 @@ import { useState } from "react";
 import RadarChart from "~/charts/radar";
 import { LayoutGroup, motion } from "framer-motion";
 import Bar from "~/charts/bar/bar";
+import styles from "~/styles/gauge.css";
 
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
+}
 registerLicense(
   "ORg4AjUWIQA/Gnt2VVhkQlFacldJXnxIfEx0RWFab1t6cVNMZFxBNQtUQF1hSn5Rd0VjXHpZcXBVRWlV"
 );
@@ -61,7 +65,7 @@ export const loader = async ({ params, context }: LoaderArgs) => {
 };
 
 export default function Poll() {
-  const [hasVoted, setHasVoted] = useState(true);
+  const [hasVoted, setHasVoted] = useState(false);
   const { api_url, data } = useLoaderData<typeof loader>();
   if ("error" in data) {
     return <div>ERROR: {data.error}</div>;
@@ -121,7 +125,7 @@ export default function Poll() {
                     endAngle={90}
                     minimum={answer.min}
                     maximum={answer.max}
-                    lineStyle={{ width: 1, color: "#999" }}
+                    lineStyle={{ width: 3, color: "#7359c4" }}
                     minorTicks={{ interval: 1 }}
                     // roundingPlaces={1}
                   >
@@ -146,10 +150,27 @@ export default function Poll() {
                         markerWidth={100}
                       ></PointerDirective> */}
                       <PointerDirective
+                        type={"Marker"}
+                        markerShape={"Image"}
+                        imageUrl={"https://www.dianomi.com/img/uploads/Y_zmbkhfuTwosipq34zghgAAAC4.png"}
+                        value={answer.default}
+                        markerHeight={80}
+                        markerWidth={70}
+                      ></PointerDirective>
+                      <PointerDirective
                         value={answer.default}
                         cap={{ radius: 5 }}
-                        radius={"110%"}
-                        pointerWidth={10}
+                        radius={"70%"}
+                        color={'#7359c4'}
+                        pointerWidth={15}
+                        animation={{
+                          enable: true,
+                          duration: 1000
+                      }}
+                      needleTail={{
+                        length: '12%',
+                        color: '#7359c4'
+                    }}
                       ></PointerDirective>
                     </PointersDirective>
                   </AxisDirective>
@@ -158,7 +179,7 @@ export default function Poll() {
             </div>
           )}
         </motion.div>
-        <div style={{ position: "absolute", bottom: 0, fontSize: "12px" }}>
+        <div style={{ position: "absolute", bottom: 0, fontSize: "12px" }} className="partner-logo">
           Sponsored by:{" "}
           <img
             style={{ width: "50%" }}
