@@ -48,7 +48,7 @@ function Bar({ id, api_url }: { id: number; api_url: string }) {
     <>
       <ChartComponent
         id="charts"
-        style={{ textAlign: "center", height: "60%" }}
+        style={{ textAlign: "center", height: "70%" }}
         legendSettings={{ enableHighlight: true }}
         primaryXAxis={{
           labelIntersectAction: Browser.isDevice ? "None" : "Trim",

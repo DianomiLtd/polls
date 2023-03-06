@@ -5,8 +5,11 @@ import { z } from "zod";
 import {
   CircularGaugeComponent,
   AxesDirective,
-  AxisDirective,
+  AxisDirective, 
   PointersDirective,
+  ILoadedEventArgs, 
+  GaugeTheme, 
+  IPointerDragEventArgs,
   PointerDirective,
   Inject,
   GaugeTooltip,
@@ -29,6 +32,39 @@ registerLicense(
 
 const mySchema = z.number();
 
+
+
+  let gauge: CircularGaugeComponent;
+  let drag: HTMLInputElement;
+
+  function dragMove(args: IPointerDragEventArgs): void {
+      if (args.type.indexOf('pointer') > -1) {
+          // drag.value = Math.round(args.currentValue).toString();
+          setPointersValue(gauge, Math.round(args.currentValue));
+      }
+  };
+
+  function dragEnd(args: IPointerDragEventArgs): void {
+      if (isNaN(args.rangeIndex)) {
+          setPointersValue(gauge, Math.round(args.currentValue));
+      }
+  };
+
+  function load(args: ILoadedEventArgs): void {
+
+  }
+
+  function dragChange(): void {
+      let pointerValue: number = +drag.value;
+      setPointersValue(gauge, pointerValue);
+  }
+
+
+  function setPointersValue(circulargauge: CircularGaugeComponent, pointerValue: number): void {
+      circulargauge.setPointerValue(0, 1, pointerValue);
+      circulargauge.setPointerValue(0, 0, pointerValue);
+  }
+  
 export type Question = {
   id: number;
   question: string;
@@ -103,30 +139,44 @@ export default function Poll() {
             <Bar id={id} api_url={api_url} />
           ) : (
             <div style={{ height: "100%" }}>
-              <CircularGaugeComponent
-                dragEnd={getDragValue}
-                enablePointerDrag={true}
+              <CircularGaugeComponent 
+                centerY='35%'  
+                load={load.bind(this)}  
+                background='transparent' 
+                dragMove={dragEnd.bind(this)} 
+                dragEnd={getDragValue} 
+                id='dianomi_poll' 
+                ref={g => gauge = g} 
+                enablePointerDrag={true} 
+                enableRangeDrag={false}
                 tooltip={{
                   enable: true,
-                  template:
-                    '<div id="templateWrap"><div style="float: right; padding-left:10px; line-height:30px;"><span>Pointer &nbsp;&nbsp;:&nbsp; ${value}</span></div></div>'
-                }}
-                moveToCenter={true}
-                style={{
-                  resize: "horizontal",
-                  width: "100%",
-                  height: "100%"
-                }}
+                  type: ['Range', 'Pointer'],
+                  showAtMousePosition: true,
+                  format: '{value}',
+                  enableAnimation: false,
+                  textStyle: {
+                      size: '13px',
+                      fontFamily: 'inherit'
+                  },
+                  rangeSettings: {
+                      showAtMousePosition: true, format: "Start Value: {start} <br/> End Value: {end}", textStyle: {
+                          size: '13px',
+                          fontFamily: 'inherit'
+                      }
+                  }
+              }}
               >
-                {/* <Inject services={[GaugeTooltip]} /> */}
+                <Inject services={[GaugeTooltip]} />
                 <AxesDirective>
                   <AxisDirective
                     startAngle={270}
                     endAngle={90}
                     minimum={answer.min}
                     maximum={answer.max}
-                    lineStyle={{ width: 3, color: "#7359c4" }}
+                    lineStyle={{ width: 5, color: "#7359c4" }}
                     minorTicks={{ interval: 1 }}
+                    radius={"87%"}
                     // roundingPlaces={1}
                   >
                     {/* <RangesDirective>
@@ -152,7 +202,7 @@ export default function Poll() {
                       <PointerDirective
                         type={"Marker"}
                         markerShape={"Image"}
-                        imageUrl={"https://www.dianomi.com/img/uploads/Y_zmbkhfuTwosipq34zghgAAAC4.png"}
+                        imageUrl={"https://www.dianomi.com/img/uploads/ZAUZytBiYBYDhMN2rAu_oQAAAAs.png"}
                         value={answer.default}
                         markerHeight={80}
                         markerWidth={70}

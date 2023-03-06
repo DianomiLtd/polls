@@ -2,8 +2,11 @@ body{
     background: rgb(255, 255, 255);
     font-family: nexa, arial, sans-serif;
 }
-image#circulargauge_control_1_Axis_0_Pointer_Marker_0 {
-    x: 230px;
+g text {
+    font-family: nexa, arial, sans-serif !important;
+}
+image#dianomi_poll_Axis_0_Pointer_Marker_0{
+    x: 228px;
 }
 .poll-question {
     font-size: 14px;
@@ -11,5 +14,5 @@ image#circulargauge_control_1_Axis_0_Pointer_Marker_0 {
 .partner-logo img {
     width: 40%;
     margin-left: 5px;
-    max-width: 40%;
+    max-width: 30%;
 }
