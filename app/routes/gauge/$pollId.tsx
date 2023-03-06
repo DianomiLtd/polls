@@ -5,10 +5,10 @@ import { z } from "zod";
 import {
   CircularGaugeComponent,
   AxesDirective,
-  AxisDirective, 
+  AxisDirective,
   PointersDirective,
-  ILoadedEventArgs, 
-  GaugeTheme, 
+  ILoadedEventArgs,
+  GaugeTheme,
   IPointerDragEventArgs,
   PointerDirective,
   Inject,
@@ -32,39 +32,37 @@ registerLicense(
 
 const mySchema = z.number();
 
+let gauge: CircularGaugeComponent;
+let drag: HTMLInputElement;
 
-
-  let gauge: CircularGaugeComponent;
-  let drag: HTMLInputElement;
-
-  function dragMove(args: IPointerDragEventArgs): void {
-      if (args.type.indexOf('pointer') > -1) {
-          // drag.value = Math.round(args.currentValue).toString();
-          setPointersValue(gauge, Math.round(args.currentValue));
-      }
-  };
-
-  function dragEnd(args: IPointerDragEventArgs): void {
-      if (isNaN(args.rangeIndex)) {
-          setPointersValue(gauge, Math.round(args.currentValue));
-      }
-  };
-
-  function load(args: ILoadedEventArgs): void {
-
+function dragMove(args: IPointerDragEventArgs): void {
+  if (args.type.indexOf("pointer") > -1) {
+    // drag.value = Math.round(args.currentValue).toString();
+    setPointersValue(gauge, Math.round(args.currentValue));
   }
+}
 
-  function dragChange(): void {
-      let pointerValue: number = +drag.value;
-      setPointersValue(gauge, pointerValue);
+function dragEnd(args: IPointerDragEventArgs): void {
+  if (isNaN(args.rangeIndex)) {
+    setPointersValue(gauge, Math.round(args.currentValue));
   }
+}
 
+function load(args: ILoadedEventArgs): void {}
 
-  function setPointersValue(circulargauge: CircularGaugeComponent, pointerValue: number): void {
-      circulargauge.setPointerValue(0, 1, pointerValue);
-      circulargauge.setPointerValue(0, 0, pointerValue);
-  }
-  
+function dragChange(): void {
+  let pointerValue: number = +drag.value;
+  setPointersValue(gauge, pointerValue);
+}
+
+function setPointersValue(
+  circulargauge: CircularGaugeComponent,
+  pointerValue: number
+): void {
+  circulargauge.setPointerValue(0, 1, pointerValue);
+  circulargauge.setPointerValue(0, 0, pointerValue);
+}
+
 export type Question = {
   id: number;
   question: string;
@@ -94,7 +92,7 @@ export const loader = async ({ params, context }: LoaderArgs) => {
   } catch {
     response = {
       data: { error: `The id "${params.pollId}" does not exist` },
-      api_url: (context.POLL_API as string)  || ''
+      api_url: (context.POLL_API as string) || ""
     };
   }
   return json({ api_url: context.POLL_API, data: response });
@@ -126,72 +124,65 @@ export default function Poll() {
         {question}
       </div>
       <div style={{ height: "75vh" }}>
-        <motion.div
-          layout
-          // key={hasVoted ? 'voted' : 'notVoted'}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          // exit={{ opacity: 0, scale: 0.5}}
-          transition={{ duration: 1 }}
-          style={{ height: "100%" }}
-        >
-          {hasVoted ? (
-            <Bar id={id} api_url={api_url} />
-          ) : (
-            <div style={{ height: "100%" }}>
-              <CircularGaugeComponent 
-                centerY='35%'  
-                load={load.bind(this)}  
-                background='transparent' 
-                dragMove={dragEnd.bind(this)} 
-                dragEnd={getDragValue} 
-                id='dianomi_poll' 
-                ref={g => gauge = g} 
-                enablePointerDrag={true} 
-                enableRangeDrag={false}
-                tooltip={{
-                  enable: true,
-                  type: ['Range', 'Pointer'],
+        {hasVoted ? (
+          <Bar id={id} api_url={api_url} />
+        ) : (
+          <div style={{ height: "100%" }}>
+            <CircularGaugeComponent
+              centerY="35%"
+              load={load.bind(this)}
+              background="transparent"
+              dragMove={dragEnd.bind(this)}
+              dragEnd={getDragValue}
+              id="dianomi_poll"
+              ref={(g) => (gauge = g)}
+              enablePointerDrag={true}
+              enableRangeDrag={false}
+              tooltip={{
+                enable: true,
+                type: ["Range", "Pointer"],
+                showAtMousePosition: true,
+                format: "{value}",
+                enableAnimation: false,
+                textStyle: {
+                  size: "13px",
+                  fontFamily: "inherit"
+                },
+                rangeSettings: {
                   showAtMousePosition: true,
-                  format: '{value}',
-                  enableAnimation: false,
+                  format: "Start Value: {start} <br/> End Value: {end}",
                   textStyle: {
-                      size: '13px',
-                      fontFamily: 'inherit'
-                  },
-                  rangeSettings: {
-                      showAtMousePosition: true, format: "Start Value: {start} <br/> End Value: {end}", textStyle: {
-                          size: '13px',
-                          fontFamily: 'inherit'
-                      }
+                    size: "13px",
+                    fontFamily: "inherit"
                   }
+                }
               }}
-              >
-                <Inject services={[GaugeTooltip]} />
-                <AxesDirective>
-                  <AxisDirective
-                    startAngle={270}
-                    endAngle={90}
-                    minimum={answer.min}
-                    maximum={answer.max}
-                    lineStyle={{ width: 5, color: "#7359c4" }}
-                    minorTicks={{ interval: 1 }}
-                    radius={"87%"}
-                    // roundingPlaces={1}
-                  >
-                    {/* <RangesDirective>
+            >
+              <Inject services={[GaugeTooltip]} />
+              <AxesDirective>
+                <AxisDirective
+                  startAngle={270}
+                  endAngle={90}
+                  minimum={answer.min}
+                  maximum={answer.max}
+                  lineStyle={{ width: 5, color: "#7359c4" }}
+                  minorTicks={{ interval: 1 }}
+                  radius={"87%"}
+                  // roundingPlaces={1}
+                >
+                  {/* <RangesDirective>
                       <RangeDirective
                         start={0}
                         end={answer.default}
                       ></RangeDirective>
                     </RangesDirective> */}
-                    <PointersDirective>
-                      {/* <PointerDirective
+                  <PointersDirective>
+                    {/* <PointerDirective
                         type={"Marker"}
                         value={answer.default}
                         markerShape={"Circle"}
                       ></PointerDirective> */}
-                      {/* <PointerDirective
+                    {/* <PointerDirective
                         type={"Marker"}
                         markerShape={"Image"}
                         imageUrl={"http://127.0.0.1:5502/polls/image.png"}
@@ -199,37 +190,41 @@ export default function Poll() {
                         markerHeight={50}
                         markerWidth={100}
                       ></PointerDirective> */}
-                      <PointerDirective
-                        type={"Marker"}
-                        markerShape={"Image"}
-                        imageUrl={"https://www.dianomi.com/img/uploads/ZAUZytBiYBYDhMN2rAu_oQAAAAs.png"}
-                        value={answer.default}
-                        markerHeight={80}
-                        markerWidth={70}
-                      ></PointerDirective>
-                      <PointerDirective
-                        value={answer.default}
-                        cap={{ radius: 5 }}
-                        radius={"70%"}
-                        color={'#7359c4'}
-                        pointerWidth={15}
-                        animation={{
-                          enable: true,
-                          duration: 1000
+                    <PointerDirective
+                      type={"Marker"}
+                      markerShape={"Image"}
+                      imageUrl={
+                        "https://www.dianomi.com/img/uploads/ZAUZytBiYBYDhMN2rAu_oQAAAAs.png"
+                      }
+                      value={answer.default}
+                      markerHeight={80}
+                      markerWidth={70}
+                    ></PointerDirective>
+                    <PointerDirective
+                      value={answer.default}
+                      cap={{ radius: 5 }}
+                      radius={"70%"}
+                      color={"#7359c4"}
+                      pointerWidth={15}
+                      animation={{
+                        enable: true,
+                        duration: 1000
                       }}
                       needleTail={{
-                        length: '12%',
-                        color: '#7359c4'
-                    }}
-                      ></PointerDirective>
-                    </PointersDirective>
-                  </AxisDirective>
-                </AxesDirective>
-              </CircularGaugeComponent>
-            </div>
-          )}
-        </motion.div>
-        <div style={{ position: "absolute", bottom: 0, fontSize: "12px" }} className="partner-logo">
+                        length: "12%",
+                        color: "#7359c4"
+                      }}
+                    ></PointerDirective>
+                  </PointersDirective>
+                </AxisDirective>
+              </AxesDirective>
+            </CircularGaugeComponent>
+          </div>
+        )}
+        <div
+          style={{ position: "absolute", bottom: 0, fontSize: "12px" }}
+          className="partner-logo"
+        >
           Sponsored by:{" "}
           <img
             style={{ width: "50%" }}
