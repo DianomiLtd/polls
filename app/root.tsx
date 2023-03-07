@@ -23,7 +23,7 @@ export default function App() {
       </head>
       <body style={{ height: "100%", width: "100%", margin: 0, padding: 0 }}>
         <Outlet />
-        <ScrollRestoration />
+        {/* <ScrollRestoration /> */}
         <Scripts />
         <LiveReload />
       </body>
